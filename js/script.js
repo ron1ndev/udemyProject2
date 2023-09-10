@@ -39,8 +39,24 @@ const promoInteractiveItem = document.querySelectorAll('.promo__interactive-item
 const promoList = document.querySelector('.promo__interactive-list');
 
 
+////////////////////////////////////////////////////////////////////////
+// Forma
+
+const form = document.querySelector('.add');
+const inputAdd = document.querySelector('.adding__input');
+const yes = document.getElementById('rules');
+const buttonForm = form.querySelector('button');
+
+
+
+
 // Удаление всех картинок с рекламой
-promoAdvImg.forEach(item => item.remove());
+
+
+const deleteAdb = (arr) => {
+    arr.forEach(item => item.remove());
+}
+deleteAdb(promoAdvImg)
 
 // Изменение заголовка с жанром
 promoGenre.textContent = 'Драма';
@@ -48,35 +64,60 @@ promoGenre.textContent = 'Драма';
 // Изменение фона баннера
 promoBg.style.background = "url('../img/bg.jpg')";
 
+
+
 // Сортирование массива по алфавиту
-let sortMovies = movieDB.movies.sort()
 
-// Изменение текста в пунктах списка на названия из массива фильмов
-// promoInteractiveItem.forEach((item, index) => {
-//     item.textContent = `${index + 1}) ${sortMovies[index]}`
-// })
+function movieSort() {
+    movieDB.movies.sort()
+}
+
+// Создание листа фильмов
+function createMovieLst(films, parent) {
+    promoList.innerHTML = ''
+    movieSort()
+    films.forEach((item, index) => {
+
+        parent.innerHTML += `
+        <li class="promo__interactive-item">${index + 1}) ${item}<div class="delete"></div></li>
+        `
+
+    })
+    const deleteItem = document.querySelectorAll('.delete');
+    deleteItem.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+            btn.parentElement.remove();
+            movieDB.movies.splice(i, 1)
+            createMovieLst(movieDB.movies, promoList)
+        })
+    })
+}
 
 
-promoList.innerHTML = ''
+buttonForm.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    if (!inputAdd.value == '') {
+
+        if (inputAdd.value.length > 21) {
+            movieDB.movies.push(`${inputAdd.value.slice(0, 21)}...`)
+
+        } else {
+            movieDB.movies.push(inputAdd.value)
+
+        }
+        movieSort()
+        createMovieLst(movieDB.movies, promoList)
+    }
 
 
-const li = document.createElement('li')
-li.innerHTML = '1'
+    if (yes.checked === true) {
+        console.log('Добавляем любимый фильм')
+    }
 
-sortMovies.forEach((item, index) => {
-
-    promoList.innerHTML += `
-    <li class="promo__interactive-item">${index + 1}) ${item}<div class="delete"></div></li>
-    `
+    inputAdd.value = ''
+    console.log(movieDB.movies)
 
 })
 
-
-
-
-
-
-
-
-
-
+createMovieLst(movieDB.movies, promoList)
